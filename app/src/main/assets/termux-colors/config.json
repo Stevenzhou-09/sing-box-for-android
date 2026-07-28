@@ -1,0 +1,51 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      { "tag": "dns_remote", "address": "https://1.1.1.1/dns-query", "detour": "proxy" },
+      { "tag": "dns_direct", "address": "223.5.5.5", "detour": "direct" }
+    ],
+    "rules": [
+      { "outbound": "any", "server": "dns_direct" }
+    ]
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun0",
+      "inet4_address": "172.19.0.1/30",
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "proxy",
+      "outbounds": ["edgetunnel-node"]
+    },
+    {
+      "type": "vless",
+      "tag": "edgetunnel-node",
+      "server": "hzmyhomesky.dpdns.org",
+      "server_port": 443,
+      "uuid": "填入你的UUID",
+      "tls": {
+        "enabled": true,
+        "server_name": "hzmyhomesky.dpdns.org",
+        "utls": { "enabled": true, "fingerprint": "chrome" }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2048",
+        "headers": { "Host": "hzmyhomesky.dpdns.org" }
+      }
+    },
+    { "type": "direct", "tag": "direct" }
+  ]
+}
